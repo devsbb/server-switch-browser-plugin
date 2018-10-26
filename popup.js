@@ -1,5 +1,8 @@
 e = document.getElementById("selector");
 
+console.log("current localstorage value: " + localStorage.getItem('version'));
+e.value = localStorage.getItem('version');
+
 e.addEventListener("change", function() {
     chrome.storage.sync.set({version: e.options[e.selectedIndex].value}, function() {
         console.log("Wrote updated value.");

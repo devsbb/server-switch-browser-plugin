@@ -5,23 +5,27 @@ chrome.runtime.onInstalled.addListener(function() {
       console.log("Wrote initial value.");
     });
     localStorage.setItem('version','default');
-
-    chrome.declarativeContent.onPageChanged.removeRules(undefined, function() {
-        chrome.declarativeContent.onPageChanged.addRules([{
-          conditions: [new chrome.declarativeContent.PageStateMatcher({
-            pageUrl: {urlContains: 'getgrover.com'},
-          })
-          ],
-              actions: [new chrome.declarativeContent.ShowPageAction()]
-        }]);
-      });
-
-      chrome.webRequest.onBeforeSendHeaders.addListener(
-        rewriteUserAgentHeader,
-        {urls: ['<all_urls>']},
-        ["blocking", "requestHeaders"]
-      );
 });
+
+chrome.storage.sync.get("version", function(key) {
+  localStorage.setItem('version',key);
+});
+
+chrome.declarativeContent.onPageChanged.removeRules(undefined, function() {
+  chrome.declarativeContent.onPageChanged.addRules([{
+    conditions: [new chrome.declarativeContent.PageStateMatcher({
+      pageUrl: {urlContains: 'getgrover.com'},
+    })
+    ],
+        actions: [new chrome.declarativeContent.ShowPageAction()]
+  }]);
+});
+
+chrome.webRequest.onBeforeSendHeaders.addListener(
+  rewriteUserAgentHeader,
+  {urls: ['<all_urls>']},
+  ["blocking", "requestHeaders"]
+);
 
 function rewriteUserAgentHeader(e) {
     const result = localStorage.getItem('version');
