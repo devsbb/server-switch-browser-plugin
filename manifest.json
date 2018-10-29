@@ -1,6 +1,6 @@
 {
     "name": "Grover Server Switcher",
-    "version": "0.0.0.2",
+    "version": "0.1.2",
     "description": "It switches between Grover servers.",
     "permissions": ["declarativeContent", "storage", "webRequest", "webRequestBlocking", "*://*.getgrover.com/"],
     "background": {
