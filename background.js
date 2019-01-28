@@ -1,35 +1,41 @@
 var selected = "";
+const allowedWebsites = ['getgrover.com', 'grover.com'];
 
-chrome.runtime.onInstalled.addListener(function() {
-    chrome.storage.sync.set({version: 'default'}, function() {
-      console.log("Wrote initial value.");
-    });
-    localStorage.setItem('version','default');
+chrome.runtime.onInstalled.addListener(function () {
+  chrome.storage.sync.set({ version: 'default' }, function () {
+    console.log("Wrote initial value.");
+  });
+  localStorage.setItem('version', 'default');
 });
 
-chrome.storage.sync.get("version", function(key) {
-  localStorage.setItem('version',key);
+chrome.storage.sync.get("version", function (key) {
+  localStorage.setItem('version', key);
 });
 
-chrome.declarativeContent.onPageChanged.removeRules(undefined, function() {
+chrome.declarativeContent.onPageChanged.removeRules(undefined, function () {
   chrome.declarativeContent.onPageChanged.addRules([{
-    conditions: [new chrome.declarativeContent.PageStateMatcher({
-      pageUrl: {urlContains: 'getgrover.com'},
-    })
-    ],
-        actions: [new chrome.declarativeContent.ShowPageAction()]
+    conditions: createPageConditions(),
+    actions: [new chrome.declarativeContent.ShowPageAction()]
   }]);
 });
 
 chrome.webRequest.onBeforeSendHeaders.addListener(
   rewriteUserAgentHeader,
-  {urls: ['<all_urls>']},
+  { urls: ['<all_urls>'] },
   ["blocking", "requestHeaders"]
 );
 
 function rewriteUserAgentHeader(e) {
-    const result = localStorage.getItem('version');
-    console.log("Rewrote Header: " + result);
-    e.requestHeaders.push({name: "X-Server-Select", value: result});
-    return {requestHeaders: e.requestHeaders};
+  const result = localStorage.getItem('version');
+  console.log("Rewrote Header: " + result);
+  e.requestHeaders.push({ name: "X-Server-Select", value: result });
+  return { requestHeaders: e.requestHeaders };
 }
+
+createPageConditions = () => {
+  return allowedWebsites.map((website) => {
+    return new chrome.declarativeContent.PageStateMatcher({
+      pageUrl: { urlContains: website },
+    })
+  });
+};
